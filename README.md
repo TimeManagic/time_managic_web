@@ -1,4 +1,4 @@
-Time Mangic - https://github.com/TimeManagic/time_managic_web
+Time Mangic Web
 =============
 
 这是一个Chrome浏览器插件，主旨系通过浏览器收集用户在每天浏览各个网站花费的时间。
