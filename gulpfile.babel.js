@@ -6,6 +6,8 @@ import source from 'vinyl-source-stream';
 import buffer from 'vinyl-buffer';
 import preprocessify from 'preprocessify';
 import gulpif from "gulp-if";
+import reactify from "reactify";
+import react from "react";
 
 const $ = require('gulp-load-plugins')();
 
@@ -136,25 +138,28 @@ function buildJS(target) {
 
   let tasks = files.map( file => {
     return browserify({
-      entries: 'src/scripts/' + file,
-      debug: true
-    })
-    .transform('babelify', { presets: ['es2015'] })
-    .transform(preprocessify, {
-      includeExtensions: ['.js'],
-      context: context
-    })
-    .bundle()
-    .pipe(source(file))
-    .pipe(buffer())
-    .pipe(gulpif(!production, $.sourcemaps.init({ loadMaps: true }) ))
-    .pipe(gulpif(!production, $.sourcemaps.write('./') ))
-    .pipe(gulpif(production, $.uglify({ 
-      "mangle": false,
-      "output": {
-        "ascii_only": true
-      } 
-    })))
+		entries: 'src/scripts/' + file,
+		debug: true,
+		transform: [reactify]
+	}).pipe(react({
+		es6module: true
+	}))
+		.transform('babelify', {presets: ['es2015']})
+		.transform(preprocessify, {
+			includeExtensions: ['.js'],
+			context: context
+		})
+		.bundle()
+		.pipe(source(file))
+		.pipe(buffer())
+		.pipe(gulpif(!production, $.sourcemaps.init({loadMaps: true})))
+		.pipe(gulpif(!production, $.sourcemaps.write('./')))
+		.pipe(gulpif(production, $.uglify({
+			"mangle": false,
+			"output": {
+				"ascii_only": true
+			}
+		})))
     .pipe(gulp.dest(`build/${target}/scripts`));
   });
 
